@@ -9,33 +9,59 @@
 </head>
 <body><!-- Contenido de la pagina html -->
     <div class="container" id="app">
-        <div class="card border-primary" style="max-width: 36rem;">
-            <div class="card-header bg-primary text-white">REGISTRO DE DOCENTES</div>
-            <div class="card-body">
-                <form id="frmDocente" @submit.prevent="guardarDocente">
-                    <div class="row p-1">
-                        <div class="col-3 col-md-2">CODIGO:</div>
-                        <div class="col-9 col-md-3">
-                            <input class="form-control" type="text" v-model="docente.codigo" name="txtCodigoDocente" id="txtCodigoDocente">
-                        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">REGISTRO DE DOCENTES</div>
+                    <div class="card-body">
+                        <form id="frmDocente" @submit.prevent="guardarDocente" @reset.prevent="nuevoDocente()">
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">CODIGO:</div>
+                                <div class="col-9 col-md-3">
+                                    <input class="form-control" type="text" v-model="docente.codigo" name="txtCodigoDocente" id="txtCodigoDocente">
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col-3 col-md-2">NOMBRE:</div>
+                                <div class="col-9 col-md-6">
+                                    <input class="form-control" type="text" v-model="docente.nombre" name="txtNombreDocente" id="txtNombreDocente">
+                                </div>
+                            </div>
+                            <div class="row p-1">
+                                <div class="col col-md-6">
+                                    <input class="btn btn-success" type="submit" value="Guardar Datos">
+                                </div>
+                                <div class="col col-md-6">
+                                    <input class="btn btn-warning" type="reset" value="Nuevo Registro">
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="row p-1">
-                        <div class="col-3 col-md-2">NOMBRE:</div>
-                        <div class="col-9 col-md-6">
-                            <input class="form-control" type="text" v-model="docente.nombre" name="txtNombreDocente" id="txtNombreDocente">
-                        </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="card text-bg-light">
+                    <div class="card-header">CONSULTA DE DOCENTES</div>
+                    <div class="card-body">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>CODIGO</th>
+                                    <th>NOMBRE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="docente in docentes" :key="docente.idDocente">
+                                    <td>{{docente.codigo}}</td>
+                                    <td>{{docente.nombre}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="row p-1">
-                        <div class="col col-md-6">
-                            <input class="btn btn-success" type="submit" value="Guardar Datos">
-                        </div>
-                        <div class="col col-md-6">
-                            <input class="btn btn-warning" type="reset" value="Nuevo Registro">
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
+        
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -45,17 +71,32 @@
         createApp({
             data() {
                 return {
+                    docentes:[],
                     docente:{
-                        id:0,
+                        idDocente:0,
                         codigo:'',
                         nombre:''
                     }
                 }
             },
             methods:{
+                nuevoDocente(){
+                    this.docente.idDocente = '';
+                    this.docente.codigo = '';
+                    this.docente.nombre = '';
+                },
                 guardarDocente(){
-                    localStorage.setItem('docentes', JSON.stringify(this.docente));
+                    this.docentes = this.listarDocentes();
+                    this.docentes.push( this.docente );
+                    localStorage.setItem('docentes', JSON.stringify(this.docentes));
+                    this.nuevoDocente();
+                },
+                listarDocentes(){
+                    return JSON.parse( localStorage.getItem('docentes') || "[]" );
                 }
+            },
+            created(){
+                this.docentes = this.listarDocentes();
             }
         }).mount('#app')
     </script>
