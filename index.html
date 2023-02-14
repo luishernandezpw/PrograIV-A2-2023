@@ -77,13 +77,14 @@
         createApp({
             data() {
                 return {
-                    buscar: '',
-                    docentes:[],
-                    accion : 'nuevo',
-                    docente:{
-                        idDocente:0,
-                        codigo:'',
-                        nombre:''
+                    db       : '',
+                    buscar   : '',
+                    docentes : [],
+                    accion   : 'nuevo',
+                    docente  : {
+                        idDocente : '',
+                        codigo    : '',
+                        nombre    : ''
                     }
                 }
             },
@@ -99,20 +100,17 @@
                     this.docente = docente;
                 },
                 guardarDocente(){
-                    this.listarDocentes();
+                    let store = this.abrirStore("tbldocentes", 'readwrite');
                     if( this.accion==='nuevo' ){
-                        this.docente.idDocente = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal
-                        this.docentes.push( JSON.parse(JSON.stringify(this.docente)) );
-                    }else if(this.accion==='modificar'){
-                        //hacer la busqueda y modificar el registro
-                        let index = this.docentes.findIndex(docente=>docente.idDocente==this.docente.idDocente);
-                        this.docentes[index] = JSON.parse(JSON.stringify(this.docente));
-                    }else if(this.accion==='eliminar'){
-                        let index = this.docentes.findIndex(docente=>docente.idDocente==this.docente.idDocente);
-                        this.docentes.splice(index, 1);
+                        this.docente.idDocente = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
                     }
-                    localStorage.setItem('docentes', JSON.stringify(this.docentes));
-                    this.nuevoDocente();
+                    let query = store.put( JSON.parse( JSON.stringify(this.docente) ));
+                    query.onsuccess = resp=>{
+                        this.nuevoDocente();
+                    };
+                    query.onerror = err=>{
+                        console.error('ERROR al guardar docente', err);
+                    };
                 },
                 eliminarDocente(docente){
                     if( confirm(`Esta seguro de eliminar el docente ${docente.nombre}?`) ){
@@ -122,12 +120,38 @@
                     }
                 },
                 listarDocentes(){
-                    this.docentes = JSON.parse( localStorage.getItem('docentes') || "[]" )
-                        .filter(docente=>docente.nombre.toLowerCase().indexOf(this.buscar.toLowerCase())>-1);
+                    let store = this.abrirStore('tbldocentes', 'readonly'),
+                        data = store.getAll();
+                    data.onsuccess = resp=>{
+                        this.docentes = data.result;
+                    };
+                },
+                abrirBD(){
+                    let indexDB = indexedDB.open('db_sistema_academico', 1);
+                    indexDB.onupgradeneeded = e=>{
+                        let req = e.target.result,
+                            tbldocentes = req.createObjectStore('tbldocentes', {keyPath: 'idDocente'}),
+                            tblalumnos = req.createObjectStore('tblalumnos', {keyPath:'idAlumno'}),
+                            tblmaterias = req.createObjectStore('tblmaterias', {keyPath:'idMateria'});
+
+                        tbldocentes.createIndex('idDocente', 'idDocente', {unique: true});
+                        tbldocentes.createIndex('codigo', 'codigo', {unique: true});
+                    };
+                    indexDB.onsuccess = e=>{
+                        this.db = e.target.result;
+                        this.listarDocentes();
+                    };
+                    indexDB.onerror = e=>{
+                        console.error('ERROR al crear, abrir la BD', e);
+                    };
+                },
+                abrirStore(store, modo){
+                    let ltx = this.db.transaction(store, modo);
+                    return ltx.objectStore(store);
                 }
             },
             created(){
-                this.listarDocentes();
+                this.abrirBD();
             }
         }).mount('#app')
     </script>
