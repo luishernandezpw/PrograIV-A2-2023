@@ -1,66 +1,66 @@
-Vue.component('docentes', {
+Vue.component('alumnos', {
     data() {
         return {
             db       : '',
             buscar   : '',
-            docentes : [],
+            alumnos : [],
             accion   : 'nuevo',
-            docente  : {
-                idDocente : '',
+            alumno  : {
+                idAlumno : '',
                 codigo    : '',
                 nombre    : ''
             }
         }
     },
     methods:{
-        nuevoDocente(){
+        nuevoAlumno(){
             this.accion = 'nuevo';
-            this.docente.idDocente = '';
-            this.docente.codigo = '';
-            this.docente.nombre = '';
+            this.alumno.idAlumno = '';
+            this.alumno.codigo = '';
+            this.alumno.nombre = '';
         },
-        modificarDocente(docente){
+        modificarAlumno(alumno){
             this.accion = 'modificar';
-            this.docente = docente;
+            this.alumno = alumno;
         },
-        guardarDocente(){
-            if( this.docente.nombre=='' || 
-                this.docente.codigo=='' ){
+        guardarAlumno(){
+            if( this.alumno.nombre=='' || 
+                this.alumno.codigo=='' ){
                 console.log( 'Por favor ingrese los datos correspondientes' );
                 return;
             }
-            let store = abrirStore("tbldocentes", 'readwrite');
+            let store = abrirStore("tblalumnos", 'readwrite');
             if( this.accion==='nuevo' ){
-                this.docente.idDocente = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
+                this.alumno.idAlumno = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
             }
-            let query = store.put( JSON.parse( JSON.stringify(this.docente) ));
+            let query = store.put( JSON.parse( JSON.stringify(this.alumno) ));
             query.onsuccess = resp=>{
-                this.nuevoDocente();
+                this.nuevoAlumno();
                 this.listar();
             };
             query.onerror = err=>{
-                console.error('ERROR al guardar docente', err);
+                console.error('ERROR al guardar alumno', err);
             };
         },
-        eliminarDocente(docente){
-            if( confirm(`Esta seguro de eliminar el docente ${docente.nombre}?`) ){
-                let store = abrirStore('tbldocentes', 'readwrite'),
-                    req = store.delete(docente.idDocente);
+        eliminarAlumno(alumno){
+            if( confirm(`Esta seguro de eliminar el alumno ${alumno.nombre}?`) ){
+                let store = abrirStore('tblalumnos', 'readwrite'),
+                    req = store.delete(alumno.idAlumno);
                 req.onsuccess = res=>{
                     this.listar();
                 };
                 req.onerror = err=>{
-                    console.error('ERROR al guardar docente');
+                    console.error('ERROR al guardar alumno');
                 };
             }
         },
         listar(){
-            let store = abrirStore('tbldocentes', 'readonly'),
+            let store = abrirStore('tblalumnos', 'readonly'),
                 data = store.getAll();
             data.onsuccess = resp=>{
-                this.docentes = data.result
-                    .filter(docente=>docente.nombre.toLowerCase().indexOf(this.buscar.toLowerCase())>-1 || 
-                        docente.codigo.indexOf(this.buscar)>-1);
+                this.alumnos = data.result
+                    .filter(alumno=>alumno.nombre.toLowerCase().indexOf(this.buscar.toLowerCase())>-1 || 
+                        alumno.codigo.indexOf(this.buscar)>-1);
             };
         },
     },
@@ -68,19 +68,19 @@ Vue.component('docentes', {
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="card border-primary">
-                        <div class="card-header bg-primary text-white">REGISTRO DE DOCENTES</div>
+                        <div class="card-header bg-primary text-white">REGISTRO DE ALUMNOS</div>
                         <div class="card-body">
-                            <form id="frmDocente" @submit.prevent="guardarDocente" @reset.prevent="nuevoDocente()">
+                            <form id="frmAlumno" @submit.prevent="guardarAlumno" @reset.prevent="nuevoAlumno()">
                                 <div class="row p-1">
                                     <div class="col-3 col-md-2">CODIGO:</div>
                                     <div class="col-9 col-md-3">
-                                        <input required pattern="[0-9]{3}" class="form-control" type="text" v-model="docente.codigo">
+                                        <input required pattern="[US|SM]{2}[SI|LE|LI]{2}[0-9]{6}" class="form-control" type="text" v-model="alumno.codigo">
                                     </div>
                                 </div>
                                 <div class="row p-1">
                                     <div class="col-3 col-md-2">NOMBRE:</div>
                                     <div class="col-9 col-md-6">
-                                        <input required pattern="[a-zA-Z ]{3,65}" class="form-control" type="text" v-model="docente.nombre">
+                                        <input required pattern="[a-zA-Z ]{3,65}" class="form-control" type="text" v-model="alumno.nombre">
                                     </div>
                                 </div>
                                 <div class="row p-1">
@@ -97,7 +97,7 @@ Vue.component('docentes', {
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="card text-bg-light">
-                        <div class="card-header">CONSULTA DE DOCENTES</div>
+                        <div class="card-header">CONSULTA DE ALUMNOS</div>
                         <div class="card-body">
                             <form>
                                 <table class="table table-dark table-hover">
@@ -113,10 +113,10 @@ Vue.component('docentes', {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="docente in docentes" @click='modificarDocente(docente)' :key="docente.idDocente">
-                                            <td>{{docente.codigo}}</td>
-                                            <td>{{docente.nombre}}</td>
-                                            <td><button @click.prevent="eliminarDocente(docente)" class="btn btn-danger">Eliminar</button></td>
+                                        <tr v-for="alumno in alumnos" @click='modificarAlumno(alumno)' :key="alumno.idAlumno">
+                                            <td>{{alumno.codigo}}</td>
+                                            <td>{{alumno.nombre}}</td>
+                                            <td><button @click.prevent="eliminarAlumno(alumno)" class="btn btn-danger">Eliminar</button></td>
                                         </tr>
                                     </tbody>
                                 </table>

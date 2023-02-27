@@ -1,66 +1,68 @@
-Vue.component('docentes', {
+Vue.component('materias', {
     data() {
         return {
             db       : '',
             buscar   : '',
-            docentes : [],
+            materias : [],
             accion   : 'nuevo',
-            docente  : {
-                idDocente : '',
+            materia  : {
+                idMateria : '',
                 codigo    : '',
-                nombre    : ''
+                nombre    : '',
+                uv        : '',
             }
         }
     },
     methods:{
-        nuevoDocente(){
+        nuevoMateria(){
             this.accion = 'nuevo';
-            this.docente.idDocente = '';
-            this.docente.codigo = '';
-            this.docente.nombre = '';
+            this.materia.idMateria = '';
+            this.materia.codigo = '';
+            this.materia.nombre = '';
+            this.materia.uv = '';
         },
-        modificarDocente(docente){
+        modificarMateria(materia){
             this.accion = 'modificar';
-            this.docente = docente;
+            this.materia = materia;
         },
-        guardarDocente(){
-            if( this.docente.nombre=='' || 
-                this.docente.codigo=='' ){
+        guardarMateria(){
+            if( this.materia.nombre=='' || 
+                this.materia.codigo=='' ){
                 console.log( 'Por favor ingrese los datos correspondientes' );
                 return;
             }
-            let store = abrirStore("tbldocentes", 'readwrite');
+            let store = abrirStore("tblmaterias", 'readwrite');
             if( this.accion==='nuevo' ){
-                this.docente.idDocente = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
+                this.materia.idMateria = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
             }
-            let query = store.put( JSON.parse( JSON.stringify(this.docente) ));
+            let query = store.put( JSON.parse( JSON.stringify(this.materia) ));
             query.onsuccess = resp=>{
-                this.nuevoDocente();
+                this.nuevoMateria();
                 this.listar();
             };
             query.onerror = err=>{
-                console.error('ERROR al guardar docente', err);
+                console.error('ERROR al guardar materia', err);
             };
         },
-        eliminarDocente(docente){
-            if( confirm(`Esta seguro de eliminar el docente ${docente.nombre}?`) ){
-                let store = abrirStore('tbldocentes', 'readwrite'),
-                    req = store.delete(docente.idDocente);
+        eliminarMateria(materia){
+            if( confirm(`Esta seguro de eliminar el materia ${materia.nombre}?`) ){
+                let store = abrirStore('tblmaterias', 'readwrite'),
+                    req = store.delete(materia.idMateria);
                 req.onsuccess = res=>{
                     this.listar();
                 };
                 req.onerror = err=>{
-                    console.error('ERROR al guardar docente');
+                    console.error('ERROR al guardar materia');
                 };
             }
         },
         listar(){
-            let store = abrirStore('tbldocentes', 'readonly'),
+            let store = abrirStore('tblmaterias', 'readonly'),
                 data = store.getAll();
             data.onsuccess = resp=>{
-                this.docentes = data.result
-                    .filter(docente=>docente.nombre.toLowerCase().indexOf(this.buscar.toLowerCase())>-1 || 
-                        docente.codigo.indexOf(this.buscar)>-1);
+                this.materias = data.result
+                    .filter(materia=>materia.nombre.toLowerCase().indexOf(this.buscar.toLowerCase())>-1 || 
+                        materia.codigo.indexOf(this.buscar)>-1);
             };
         },
     },
@@ -68,19 +70,25 @@ Vue.component('docentes', {
             <div class="row">
                 <div class="col-12 col-md-6">
                     <div class="card border-primary">
-                        <div class="card-header bg-primary text-white">REGISTRO DE DOCENTES</div>
+                        <div class="card-header bg-primary text-white">REGISTRO DE MATERIAS</div>
                         <div class="card-body">
-                            <form id="frmDocente" @submit.prevent="guardarDocente" @reset.prevent="nuevoDocente()">
+                            <form id="frmMateria" @submit.prevent="guardarMateria" @reset.prevent="nuevoMateria()">
                                 <div class="row p-1">
                                     <div class="col-3 col-md-2">CODIGO:</div>
                                     <div class="col-9 col-md-3">
-                                        <input required pattern="[0-9]{3}" class="form-control" type="text" v-model="docente.codigo">
+                                        <input required pattern="[0-9]{3}" class="form-control" type="text" v-model="materia.codigo">
                                     </div>
                                 </div>
                                 <div class="row p-1">
                                     <div class="col-3 col-md-2">NOMBRE:</div>
                                     <div class="col-9 col-md-6">
-                                        <input required pattern="[a-zA-Z ]{3,65}" class="form-control" type="text" v-model="docente.nombre">
+                                        <input required pattern="[a-zA-Z ]{3,65}" class="form-control" type="text" v-model="materia.nombre">
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col-3 col-md-2">UV:</div>
+                                    <div class="col-9 col-md-6">
+                                        <input required pattern="[0-9]{1,3}" class="form-control" type="text" v-model="materia.uv">
                                     </div>
                                 </div>
                                 <div class="row p-1">
@@ -97,26 +105,28 @@ Vue.component('docentes', {
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="card text-bg-light">
-                        <div class="card-header">CONSULTA DE DOCENTES</div>
+                        <div class="card-header">CONSULTA DE MATERIAS</div>
                         <div class="card-body">
                             <form>
                                 <table class="table table-dark table-hover">
                                     <thead>
                                         <tr>
                                             <th>BUSCAR:</th>
-                                            <th colspan="2"><input type="text" @keyup="listar()" v-model="buscar" 
+                                            <th colspan="3"><input type="text" @keyup="listar()" v-model="buscar" 
                                                 class="form-control" placeholder="Busar por nombre" ></th>
                                         </tr>
                                         <tr>
                                             <th>CODIGO</th>
-                                            <th colspan="2">NOMBRE</th>
+                                            <th>NOMBRE</th>
+                                            <th colspan="2">UV</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="docente in docentes" @click='modificarDocente(docente)' :key="docente.idDocente">
-                                            <td>{{docente.codigo}}</td>
-                                            <td>{{docente.nombre}}</td>
-                                            <td><button @click.prevent="eliminarDocente(docente)" class="btn btn-danger">Eliminar</button></td>
+                                        <tr v-for="materia in materias" @click='modificarMateria(materia)' :key="materia.idMateria">
+                                            <td>{{materia.codigo}}</td>
+                                            <td>{{materia.nombre}}</td>
+                                            <td>{{materia.uv}}</td>
+                                            <td><button @click.prevent="eliminarMateria(materia)" class="btn btn-danger">Eliminar</button></td>
                                         </tr>
                                     </tbody>
                                 </table>
