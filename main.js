@@ -28,6 +28,9 @@ var db,
                     tblmaterias = req.createObjectStore('tblmaterias', {
                         keyPath: 'idMateria'
                     });
+                    tblmatriculas = req.createObjectStore('tblmatriculas', {
+                        keyPath: 'idMatricula'
+                    });
 
                 tbldocentes.createIndex('idDocente', 'idDocente', {
                     unique: true
