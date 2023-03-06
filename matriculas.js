@@ -11,6 +11,7 @@ Vue.component('matriculas', {
                 idMatricula : '',
                 fecha       : '',
                 pago        : false,
+                comprobante : '',
                 alumno      : {
                     id      : '',
                     label   : ''
@@ -103,7 +104,18 @@ Vue.component('matriculas', {
                                 <div class="row p-1">
                                     <div class="col-3 col-md-2"><label for="chkPagoMatricula">ACTUAZACION PAGO:</label></div>
                                     <div class="col-9 col-md-6">
-                                        <input required class="form-check-input" type="checkbox" v-model="matricula.pago" id="chkPagoMatricula">
+                                        <input class="form-check-input" type="checkbox" v-model="matricula.pago" id="chkPagoMatricula">
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col-3 col-md-2">
+                                        <img :src='matricula.comprobante' width="50" height="50"/>
+                                    </div>
+                                    <div class="col-9 col-md-10">
+                                        <div class="input-group mb-3">
+                                            <label class="input-group-text" for="inputGroupFile01">Subir comprobante</label>
+                                            <input type="file" accept="image/*" onChange="seleccionarImagen(this)" class="form-control" id="inputGroupFile01">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row p-1">
@@ -127,20 +139,22 @@ Vue.component('matriculas', {
                                     <thead>
                                         <tr>
                                             <th>BUSCAR:</th>
-                                            <th colspan="3"><input type="text" @keyup="listar()" v-model="buscar" 
+                                            <th colspan="4"><input type="text" @keyup="listar()" v-model="buscar" 
                                                 class="form-control" placeholder="Busar por nombre" ></th>
                                         </tr>
                                         <tr>
                                             <th>NOMBRE</th>
                                             <th>FECHA</th>
+                                            <th>COMPROBANTE</th>
                                             <th colspan="2">PAGO</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="matricula in matriculas" @click='modificarMatricula(matricula)' :key="matricula.idMatricula">
                                             <td>{{matricula.alumno.label}}</td>
-                                            <td>{{ (new Date(matricula.fecha)).toLocaleDateString() }}</td>
-                                            <td>{{matricula.pago}}</td>
+                                            <td>{{ (new Date(matricula.fecha +' 01:00:00')).toLocaleDateString() }}</td>
+                                            <td><img :src='matricula.comprobante' width="50" height="50" /></td>
+                                            <td>{{matricula.pago ? 'ACTUALIZO PAGO' : 'PENDIENTE ACTUALIZAR' }}</td>
                                             <td><button @click.prevent="eliminarMatricula(matricula)" class="btn btn-danger">Eliminar</button></td>
                                         </tr>
                                     </tbody>
