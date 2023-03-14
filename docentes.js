@@ -35,7 +35,7 @@ Vue.component('docentes', {
             }
             let query = store.put( JSON.parse( JSON.stringify(this.docente) ));
             query.onsuccess = resp=>{
-                fetch(`private/modulos/docentes/docentes.php?docente=${JSON.stringify(this.docente)}`)
+                fetch(`private/modulos/docentes/docentes.php?accion=${this.accion}&docente=${JSON.stringify(this.docente)}`)
                 .then(resp=>resp.json())
                 .then(resp=>{
                     console.log(resp);
@@ -52,6 +52,11 @@ Vue.component('docentes', {
                 let store = abrirStore('tbldocentes', 'readwrite'),
                     req = store.delete(docente.idDocente);
                 req.onsuccess = res=>{
+                    fetch(`private/modulos/docentes/docentes.php?accion=eliminar&docente=${JSON.stringify(this.docente)}`)
+                    .then(resp=>resp.json())
+                    .then(resp=>{
+                        console.log(resp);
+                    });
                     this.listar();
                 };
                 req.onerror = err=>{
