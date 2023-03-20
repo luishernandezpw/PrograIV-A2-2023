@@ -4,7 +4,7 @@ Clases de Programación Computacional IV
 # PROYECTO FINAL.
 Desarrollar el prototipo funcional del proyecto final de (Ingeniería de software + Programacion Computacional IV)
 ## Tecnologias a utilizar
-- Laravel
+- Laravel (Opcional)
 - Vuejs
 - Bootstrap
 - Almacenamiento en Local (WebSQL, localStorage, IndexedDB)
