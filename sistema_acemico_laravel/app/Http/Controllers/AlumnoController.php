@@ -5,14 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Alumno;
 use Illuminate\Http\Request;
 
-class AlumnoCotroller extends Controller
+class AlumnoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        //select * from alumnos;
+        return alumno::get();
     }
 
     /**
