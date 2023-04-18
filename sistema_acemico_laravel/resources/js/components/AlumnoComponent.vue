@@ -95,7 +95,7 @@ import axios from 'axios';
                     return;
                 }
                 let store = this.abrirStore("tblalumnos", 'readwrite'),
-                    method = 'POST';//ACTUALIZAR
+                    method = 'PUT';//ACTUALIZAR
                 if( this.accion==='nuevo' ){
                     method = 'POST';//INSERTAR
                     this.alumno.idAlumno = new Date().getTime().toString(16);//las cantidad milisegundos y lo convierte en hexadecimal   
@@ -106,7 +106,7 @@ import axios from 'axios';
                     data: this.alumno
                 }).then(resp=>{
                     console.log(resp);
-                }).error(err=>{
+                }).catch(err=>{
                     console.error(err);
                 });
                 let query = store.put( JSON.parse( JSON.stringify(this.alumno) ));
@@ -121,6 +121,15 @@ import axios from 'axios';
             },
             eliminarAlumno(alumno){
                 if( confirm(`Esta seguro de eliminar el alumno ${alumno.nombre}?`) ){
+                    axios({
+                        url:'alumnos',
+                        method: 'DELETE',
+                        data: {idAlumno: alumno.idAlumno}
+                    }).then(resp=>{
+                        console.log(resp);
+                    }).catch(err=>{
+                        console.error(err);
+                    });
                     let store = this.abrirStore('tblalumnos', 'readwrite'),
                         req = store.delete(alumno.idAlumno);
                     req.onsuccess = res=>{
