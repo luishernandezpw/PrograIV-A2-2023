@@ -1,11 +1,17 @@
 import './bootstrap';
 import { createApp } from 'vue';
 import alumnos from './components/AlumnoComponent.vue';
+import chat from './components/ChatComponent.vue';
 window.db = '';
+window.socketio = io('http://127.0.0.1:3001');
+socketio.on('connect', socket=>{
+    console.log('Conectado a nodejs en puerto 3001');
+}); 
 
 const app = createApp({
     components:{
         alumnos,
+        chat
     },
     data(){
         return {
@@ -15,6 +21,7 @@ const app = createApp({
                 alumno:{ mostrar:false, },
                 matricula:{ mostrar:false, },
                 inscripcion:{ mostrar:false, },
+                chat:{ mostrar:false, },
             }
         }
     },

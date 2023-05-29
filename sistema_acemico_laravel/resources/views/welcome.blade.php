@@ -32,17 +32,20 @@
                             <a class="nav-link" @click="abrirCerrarFormulario('materia')" href="#">Materia</a>
                             <a class="nav-link" @click="abrirCerrarFormulario('matricula')" href="#">Matricula</a>
                             <a class="nav-link" @click="abrirCerrarFormulario('inscripcion')" href="#">Inscripcion</a>
+                            <a class="nav-link" @click="abrirCerrarFormulario('chat')" href="#">Chat</a>
                         </div>
                     </div>
                 </div>
             </nav>
             <div id="sistemApp">
                 <alumnos ref="alumno" v-show="forms['alumno'].mostrar"></alumnos>
+                <chat ref="chat" v-show="forms['chat'].mostrar"></chat>
                <!-- <docentes ref="docente" v-show="forms['docente'].mostrar"></docentes>
                 <materias ref="materia" v-show="forms['materia'].mostrar"></materias>
                 <matriculas ref="matricula" v-show="forms['matricula'].mostrar"></alumnos>-->
             </div>
         </div>
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
         <!-- <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> NO soporta SFC con la CDN 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>-->

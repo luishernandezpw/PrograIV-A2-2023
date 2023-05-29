@@ -1,6 +1,13 @@
 const express = require('express'),
     app = express(),
     http = require('http').Server(app),
+    io = require('socket.io')(http, {
+        allowEIO3: true,
+        cors:{
+            origin: ['http://localhost:8000'],
+            credential:true,
+        }
+    }),
     { MongoClient } = require('mongodb'),
     url = 'mongodb://127.0.0.1:27017',
     client = new MongoClient(url),
@@ -12,6 +19,13 @@ async function conectarMongoDb(){
     await client.connect();
     return client.db(dbname);
 }
+io.on('connect', socket=>{
+    console.log('Chat conectado...');
+
+    socket.on('chat', chat=>{
+        console.log(chat);
+    });
+});
 
 app.get('/', (req, resp)=>{
     resp.sendFile(__dirname + '/index.html');
