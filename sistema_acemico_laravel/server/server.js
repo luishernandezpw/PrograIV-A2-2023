@@ -22,8 +22,17 @@ async function conectarMongoDb(){
 io.on('connect', socket=>{
     console.log('Chat conectado...');
 
-    socket.on('chat', chat=>{
-        console.log(chat);
+    socket.on('chat', async chat=>{
+        let db = await conectarMongoDb(),
+            collection = db.collection('chat');
+        collection.insertOne(chat);
+        socket.broadcast.emit('chat', chat); //envia todos menos a mi..., es decir a los demas.
+    });
+    socket.on('historial', async ()=>{
+        let db = await conectarMongoDb(),
+            collection = db.collection('chat'),
+            chats = await collection.find().toArray();
+        socket.emit('historial', chats); //se envia solo a mi...
     });
 });
 

@@ -16,7 +16,7 @@
                     <div class="row">
                         <div class="col">
                             <form id="frmChat" @submit.prevent="guardarChat" @reset.prevent="nuevoChat()">
-                                 <input type="text" placeholder="Escribe tu mensaje" required @keyup.enter="guardarChat" v-model="chat.message" class="form-control" />              
+                                 <input type="text" placeholder="Escribe tu mensaje" required v-model="chat.message" class="form-control" />              
                             </form>
                         </div>
                     </div>
@@ -50,7 +50,19 @@ import alertify from 'alertifyjs';
                 }else{
                     alertify.error('Por escriba un mensaje');
                 }
+            },
+            obtenerHistorial(){
+                socketio.emit('historial');
+                socketio.on('historial', chats=>{
+                    this.chats = chats;
+                });
             }
+        },
+        created(){
+            this.obtenerHistorial();
+            socketio.on('chat', chat=>{
+                this.chats.push( chat );
+            });
         }
     }
 </script>
