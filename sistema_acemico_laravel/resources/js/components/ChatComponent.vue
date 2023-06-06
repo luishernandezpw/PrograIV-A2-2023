@@ -45,6 +45,7 @@ import alertify from 'alertifyjs';
         methods:{
             guardarChat(){
                 if( this.chat.message!='' ){
+                    this.chats.push( {...this.chat} );
                     socketio.emit('chat', this.chat);
                 }else{
                     alertify.error('Por escriba un mensaje');
